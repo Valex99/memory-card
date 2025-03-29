@@ -1,4 +1,4 @@
-export default function Card({ pic, title }) {
+export default function Card({ pic, title}) {
   return (
     <div
       className="max-w-[280px] max-h-[350px] aspect-w-1 aspect-h-1 bg-white rounded-lg shadow-lg 
