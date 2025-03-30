@@ -1,17 +1,20 @@
 import Ace from "./images/ace.png";
 import Card from "./Card";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Gameboard({ clickedCards, setClickedCards }) {
-  //   The underscore _ is a convention for an unused variable
-  const generateCards = Array.from({ length: 16 }, (_, index) => ({
-    id: uuidv4(),
-    pic: Ace,
-    title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
-    // Add other properties (Title / Url source))
-  }));
+    //   The underscore _ is a convention for an unused variable
+    const generateCards = Array.from({ length: 16 }, (_, index) => ({
+      id: uuidv4(),
+      pic: Ace,
+      title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
+      // Add other properties (Title / Url source))
+    }));
+
+  // Keep cards array in a state
+  const [cardsLayout, setCardsLayout] = useState(generateCards);
+
 
   // Key rule: TREAT STATE AS IMMUTABLE
   // Create a new array and pass to it all previous values and id of the clicked card
@@ -24,11 +27,13 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
   // On each change of clickedCards this code runs
   useEffect(() => {
     console.log(clickedCards);
+    // setCardsLayout(shuffleCards(cardsLayout)); // This causes clickedCards to be underlined for some reason!
+    setCardsLayout((prevCardsLayout) => shuffleCards(prevCardsLayout));
   }, [clickedCards]);
 
   // Fisher-Yates sorting algorithm
   function shuffleCards(array) {
-    const shuffled = [...array];
+    const shuffled = [...array]; // Create a copy to avoid mutating the array
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -44,7 +49,7 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
         {/* Example card elements */}
         {/* Create a loop that runs 16 times and calls Card component */}
 
-        {generateCards.map((card) => (
+        {cardsLayout.map((card) => (
           <Card
             key={card.id}
             pic={Ace}
