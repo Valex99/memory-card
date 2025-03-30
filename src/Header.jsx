@@ -5,7 +5,7 @@ export default function Header({ clickedCards }) {
       <h3 className="text-gray-600">
         Get points by clicking on a card but dont click on any more than oncde!
       </h3>
-      <h2 className="text-2xl">{clickedCards.length} / 16</h2>
+      <h2 className="text-2xl">{clickedCards.length} / 12</h2>
     </div>
   );
 }

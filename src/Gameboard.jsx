@@ -4,24 +4,28 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Gameboard({ clickedCards, setClickedCards }) {
-    //   The underscore _ is a convention for an unused variable
-    const generateCards = Array.from({ length: 16 }, (_, index) => ({
-      id: uuidv4(),
-      pic: Ace,
-      title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
-      // Add other properties (Title / Url source))
-    }));
+  //   The underscore _ is a convention for an unused variable
+  const generateCards = Array.from({ length: 12 }, (_, index) => ({
+    id: uuidv4(),
+    pic: Ace,
+    title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
+    // Add other properties (Title / Url source))
+  }));
 
   // Keep cards array in a state
   const [cardsLayout, setCardsLayout] = useState(generateCards);
-
 
   // Key rule: TREAT STATE AS IMMUTABLE
   // Create a new array and pass to it all previous values and id of the clicked card
   // Add clicked card ID to clickedCards[]
 
   const markCard = (id) => {
-    setClickedCards((previousCards) => [...previousCards, id]);
+    if (!clickedCards.includes(id)) {
+      setClickedCards((previousCards) => [...previousCards, id]);
+    } else {
+      alert("Already clicked - GAME OVER");
+      setClickedCards([]);
+    }
   };
 
   // On each change of clickedCards this code runs
