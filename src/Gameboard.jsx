@@ -14,6 +14,15 @@ export default function Gameboard() {
     // Add other properties (Title / Url source))
   }));
 
+  // Key rule: TREAT STATE AS IMMUTABLE
+  // Create a new array and pass to it all previous values and id of the clicked card
+  // Add clicked card ID to clickedCards[]
+  const markCard = (id) => {
+    setClickedCards((previousCards) => [...previousCards, id]);
+
+    console.log(clickedCards);
+  };
+
   return (
     // Outter div ensures the game board takes up the full width and height of viewport
     <div className="w-screen flex items-center justify-center">
@@ -23,7 +32,13 @@ export default function Gameboard() {
         {/* Create a loop that runs 16 times and calls Card component */}
 
         {cards.map((card) => (
-          <Card key={card.id} pic={Ace} title="aaa" />
+          <Card
+            key={card.id}
+            pic={Ace}
+            title="aaa"
+            // If you are passing arguments to function, this should be a function (infinite loop was created)
+            onClick={() => markCard(card.id)}
+          />
         ))}
       </div>
     </div>
