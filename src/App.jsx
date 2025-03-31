@@ -6,13 +6,21 @@ import { useState } from "react";
 
 export default function App() {
   const [clickedCards, setClickedCards] = useState([]);
+  const [highScore, setHighScore] = useState(0);
 
   return (
     <div className="min-w-[320px]">
-      <Header clickedCards={clickedCards} />
+      <Header
+        clickedCards={clickedCards}
+        setClickedCards={setClickedCards}
+        highScore={highScore}
+      />
+
       <Gameboard
         clickedCards={clickedCards}
         setClickedCards={setClickedCards}
+        highScore={highScore}
+        setHighScore={setHighScore}
       />
     </div>
   );

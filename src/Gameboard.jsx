@@ -1,4 +1,3 @@
-import Ace from "./images/ace.png";
 import Card from "./Card";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -7,37 +6,61 @@ import pokemonNames from "./pokemons";
 
 let isDataFetched = false;
 
-export default function Gameboard({ clickedCards, setClickedCards }) {
-  //   The underscore _ is a convention for an unused variable
+export default function Gameboard({
+  clickedCards,
+  setClickedCards,
+  highScore,
+  setHighScore,
+}) {
+  // The underscore _ is a convention for an unused variable
   const generateCards = Array.from({ length: 12 }, (_, index) => ({
     id: uuidv4(),
-    pic: Ace,
-    title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
+    pic: "",
+    title: "",
     index: index,
-    // Add other properties (Title / Url source))
   }));
 
   // Keep cards array in a state
+  // Key rule: TREAT STATE AS IMMUTABLE
+  // Create a new array and pass to it all ids of the clicked cards
   const [cardsLayout, setCardsLayout] = useState(generateCards);
   const [cardData, setCardData] = useState([]);
 
-  // Key rule: TREAT STATE AS IMMUTABLE
-  // Create a new array and pass to it all previous values and id of the clicked card
-  // Add clicked card ID to clickedCards[]
+  // The issue with checking if clickedCards.length is 12 here is asynchronous nature of React’s setState updates
+  // When you update clickedCards using setClickedCards([...previousCards, id]), the update does not happen immediately
+  // React schedules the update and re-renders the component later (You are checking the old value of clickedCards).
 
+  // Function that adds the clicked card into array, checks for duplication and handles game logic
   const markCard = (id) => {
     if (!clickedCards.includes(id)) {
       setClickedCards((previousCards) => [...previousCards, id]);
     } else {
+      if (clickedCards.length > highScore) {
+        setHighScore(clickedCards.length);
+      }
       alert("GAME OVER - same card clicked twice");
       setClickedCards([]);
     }
   };
 
-  // On each change of clickedCards this code runs
+  // Trick, add a small timeout - small delay to let UI update first
   useEffect(() => {
-    console.log(clickedCards);
-    // setCardsLayout(shuffleCards(cardsLayout)); // This causes clickedCards to be underlined for some reason!
+    if (clickedCards.length === 12) {
+      setTimeout(() => {
+        alert("YOU WON!");
+        setHighScore(clickedCards.length);
+        setClickedCards([]); // Reset the array for new game
+      }, 0);
+    }
+  }, [clickedCards]); // Linter error if only clickedCards is dependency array
+  // For that error to go away you need to include state setter function into array as well
+  // That would look like: [clickedCards, setClickedCards, setHighScore]
+  // If setClickedCards and setHighScore come from useState you should ignore the warning because React guarantees these state setter functions never change between renders
+  // If they come from props or context, they should be included in the array
+
+  // This code runs on the initial render of the page and each time clickedCards changes
+  // On the initial render because clickedCards also changes - declaration
+  useEffect(() => {
     setCardsLayout((prevCardsLayout) => shuffleCards(prevCardsLayout));
   }, [clickedCards]);
 
@@ -52,9 +75,6 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
       // Wait for all fetched promises to complete
       const results = await Promise.all(fetchedPromises);
 
-      console.log("All pokemon images fetched");
-      console.log(results); // Should log the results, not fetchedPromises
-
       // Capitalize the first letter of each Pokémon name in the results array
       const updatedResults = results.map((pokemon) => {
         return {
@@ -64,6 +84,7 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
       });
 
       // Update state setter function with the modified results
+      // Set isDataFetched which renders the cards
       setCardData(updatedResults);
       isDataFetched = true;
     };
@@ -82,13 +103,9 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
   }
 
   return (
-    // Outter div ensures the game board takes up the full width and height of viewport
-    <div className="w-screen flex items-center justify-center">
-      {/* <div className="grid grid-cols-5 grid-rows-3 gap-4 p-10"> */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6  gap-4 p-10">
-        {/* Example card elements */}
-        {/* Create a loop that runs 16 times and calls Card component */}
-
+    // First i had w-screen applied to container div (it overflows because it doesnt count for margin and padding)
+    <div className="w-full flex items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 p-10">
         {isDataFetched &&
           cardsLayout.map((card) => (
             <Card
