@@ -2,6 +2,8 @@ import Ace from "./images/ace.png";
 import Card from "./Card";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import fetchPokemonImg from "./fetchImagesAPI";
+import pokemonNames from "./pokemons";
 
 export default function Gameboard({ clickedCards, setClickedCards }) {
   //   The underscore _ is a convention for an unused variable
@@ -14,6 +16,7 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
 
   // Keep cards array in a state
   const [cardsLayout, setCardsLayout] = useState(generateCards);
+  const [cardData, setCardData] = useState([]);
 
   // Key rule: TREAT STATE AS IMMUTABLE
   // Create a new array and pass to it all previous values and id of the clicked card
@@ -34,6 +37,27 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
     // setCardsLayout(shuffleCards(cardsLayout)); // This causes clickedCards to be underlined for some reason!
     setCardsLayout((prevCardsLayout) => shuffleCards(prevCardsLayout));
   }, [clickedCards]);
+
+  useEffect(() => {
+    const fetchAllPokemonImages = async () => {
+      // Map doesn't wait for the fetch function to return results -> use Promise.all or async/await.
+      const fetchedPromises = pokemonNames.map(async (pokemon) => {
+        // Call the function which already returns pokemon name and image url
+        return fetchPokemonImg(pokemon);
+      });
+
+      // Wait for all fetched promises to complete
+      const results = await Promise.all(fetchedPromises);
+
+      console.log("All pokemon images fetched");
+      console.log(results); // Should log the results, not fetchedPromises
+
+      // Update state setter function
+      setCardData(results);
+    };
+
+    fetchAllPokemonImages(); // Call the async function to initiate the asynchronous logic
+  }, []); // Empty dependency array -> code only runs once on component mount
 
   // Fisher-Yates sorting algorithm
   function shuffleCards(array) {
