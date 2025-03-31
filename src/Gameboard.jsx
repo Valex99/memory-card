@@ -29,7 +29,7 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
     if (!clickedCards.includes(id)) {
       setClickedCards((previousCards) => [...previousCards, id]);
     } else {
-      alert("Already clicked - GAME OVER");
+      alert("GAME OVER - same card clicked twice");
       setClickedCards([]);
     }
   };
@@ -55,8 +55,16 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
       console.log("All pokemon images fetched");
       console.log(results); // Should log the results, not fetchedPromises
 
-      // Update state setter function
-      setCardData(results);
+      // Capitalize the first letter of each Pokémon name in the results array
+      const updatedResults = results.map((pokemon) => {
+        return {
+          ...pokemon,
+          name: pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1),
+        };
+      });
+
+      // Update state setter function with the modified results
+      setCardData(updatedResults);
       isDataFetched = true;
     };
 

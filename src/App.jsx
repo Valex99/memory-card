@@ -8,7 +8,7 @@ export default function App() {
   const [clickedCards, setClickedCards] = useState([]);
 
   return (
-    <div>
+    <div className="min-w-[320px]">
       <Header clickedCards={clickedCards} />
       <Gameboard
         clickedCards={clickedCards}
