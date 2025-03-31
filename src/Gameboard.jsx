@@ -5,12 +5,15 @@ import { v4 as uuidv4 } from "uuid";
 import fetchPokemonImg from "./fetchImagesAPI";
 import pokemonNames from "./pokemons";
 
+let isDataFetched = false;
+
 export default function Gameboard({ clickedCards, setClickedCards }) {
   //   The underscore _ is a convention for an unused variable
   const generateCards = Array.from({ length: 12 }, (_, index) => ({
     id: uuidv4(),
     pic: Ace,
     title: `Card ${index + 1}`, // Sets title as "Card 1", "Card 2", ..., "Card 16"
+    index: index,
     // Add other properties (Title / Url source))
   }));
 
@@ -54,6 +57,7 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
 
       // Update state setter function
       setCardData(results);
+      isDataFetched = true;
     };
 
     fetchAllPokemonImages(); // Call the async function to initiate the asynchronous logic
@@ -77,15 +81,16 @@ export default function Gameboard({ clickedCards, setClickedCards }) {
         {/* Example card elements */}
         {/* Create a loop that runs 16 times and calls Card component */}
 
-        {cardsLayout.map((card) => (
-          <Card
-            key={card.id}
-            pic={Ace}
-            title={card.title}
-            // If you are passing arguments to function, this should be a function (infinite loop was created)
-            onClick={() => markCard(card.id)}
-          />
-        ))}
+        {isDataFetched &&
+          cardsLayout.map((card) => (
+            <Card
+              key={card.id}
+              pic={cardData[card.index].img}
+              title={cardData[card.index].name}
+              // If you are passing arguments to function, this should be a function (infinite loop was created)
+              onClick={() => markCard(card.id)}
+            />
+          ))}
       </div>
     </div>
   );

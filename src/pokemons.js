@@ -5,7 +5,7 @@ const Pokemons = [
   "typhlosion",
   "scyther",
   "charizard",
-  "mimikyu",
+  "arcanine",
   "sableye",
   "zoroark",
   "espeon",
